@@ -63,3 +63,9 @@ class CounterTest(TestCase):
         updatedCounter = self.client.get('/counters/foob')
         updatedCounterValue = updatedCounter.json['foob']
         self.assertEqual(updatedCounterValue, initialCounterValue + 1)
+
+
+    def test_delete_counter():
+        testCounter = Counter()
+        responseCode = testCounter.delete_counter("example_counter")
+        self.assertEqual(responseCode, 204)
