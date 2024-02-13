@@ -16,7 +16,7 @@ def create_counter(name):
     """Create a counter"""
     app.logger.info(f"Request to create counter: {name}")
     global COUNTERS
-    if name in COUNTERS: 
+    if name in COUNTERS:
         return {"Message": f"Counter {name} already exists"}, status.HTTP_409_CONFLICT
     COUNTERS[name] = 0
     return {name: COUNTERS[name]}, status.HTTP_201_CREATED
@@ -41,4 +41,3 @@ def get_counter(name):
     if name not in COUNTERS:
         return {"Message": f"Counter {name} does not exist"}, status.HTTP_404_NOT_FOUND
     return {name: COUNTERS[name]}, status.HTTP_200_OK
-    
