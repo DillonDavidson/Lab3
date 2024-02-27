@@ -12,23 +12,44 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        python-version: [3.9]
+        # Add more versions if necessary
+
     container:
-      image: python:3.9-slim
+      image: python:${{ matrix.python-version }}-slim
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8  # Add this line to install flake8
+          pip install flake8 pylint mypy  # Add more analysis tools as needed
 
-      - name: Lint with flake8
+      - name: Lint with Flake8
         run: |
           flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 src --count --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Run unit tests with nose
-        run:  nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
+      - name: Static Analysis with Pylint
+        run: pylint src
+
+      - name: Static Type Checking with Mypy
+        run: mypy src
+
+      - name: Run unit tests with Nose
+        run: nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
+
+      # Add deployment steps if necessary
